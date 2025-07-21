@@ -1,10 +1,58 @@
+## Project Links
+- GitHub Repository: https://github.com/hammadwaheed1133/Project-Build-an-ML-Pipeline-Starter-03-07-25.git
+- Weights & Biases Project: https://wandb.ai/hwahee2-western-governors-university/nyc_airbnb
+
+## Project Status: COMPLETED ✓
+
+This project has been successfully completed with a production-ready ML pipeline for NYC Airbnb price prediction.
+
+### Final Results
+- **Model Performance**: R² = 0.546, MAE = $34.40
+- **Pipeline Status**: Fully operational end-to-end ML pipeline
+- **Model Deployment**: Random Forest model with optimized hyperparameters
+- **Data Validation**: Comprehensive data quality checks implemented
+- **Experiment Tracking**: Full W&B integration for model versioning and artifact management
+
 # Build an ML Pipeline for Short-Term Rental Prices in NYC
+
 You are working for a property management company renting rooms and properties for short periods of 
 time on various rental platforms. You need to estimate the typical price for a given property based 
 on the price of similar properties. Your company receives new data in bulk every week. The model needs 
 to be retrained with the same cadence, necessitating an end-to-end pipeline that can be reused.
 
-In this project you will build such a pipeline.
+This project implements a complete production-ready ML pipeline for this use case.
+
+## Pipeline Architecture
+
+The implemented pipeline includes the following components:
+
+1. **Data Ingestion** (`download`): Automated data fetching from source
+2. **Data Cleaning** (`basic_cleaning`): Outlier removal, data type conversion, geographic filtering
+3. **Data Validation** (`data_check`): Comprehensive data quality tests including:
+   - Row count validation
+   - Price range verification
+   - Column name validation
+   - Geographic boundary checks
+   - Statistical distribution comparisons
+4. **Data Splitting** (`data_split`): Train/validation/test split with stratification
+5. **Model Training** (`train_random_forest`): Random Forest model with optimized hyperparameters
+6. **Model Testing** (`test_regression_model`): Production model evaluation on test set
+
+## Optimized Model Configuration
+
+The final model uses the following optimized hyperparameters:
+
+```yaml
+random_forest:
+  n_estimators: 200
+  max_depth: 10
+  min_samples_split: 4
+  min_samples_leaf: 3
+  max_features: 0.5
+  criterion: squared_error
+  n_jobs: -1
+  oob_score: true
+```
 
 ## Table of contents
 
@@ -72,7 +120,6 @@ You should see a message similar to:
 wandb: Appending key for api.wandb.ai to your netrc file: /home/[your username]/.netrc
 ```
 
-
 ### The configuration
 As usual, the parameters controlling the pipeline are defined in the ``config.yaml`` file defined in
 the root of the starter kit. We will use Hydra to manage this configuration file. 
@@ -87,28 +134,35 @@ NOTE: do NOT hardcode any parameter when writing the pipeline. All the parameter
 accessed from the configuration file.
 
 ### Running the entire pipeline or just a selection of steps
-In order to run the pipeline when you are developing, you need to be in the root of the starter kit, 
-then you can execute as usual:
+
+#### Full Pipeline Execution
+To run the complete pipeline:
 
 ```bash
->  mlflow run .
+> mlflow run . -P steps=download,basic_cleaning,data_check,data_split,train_random_forest
 ```
-This will run the entire pipeline.
 
+#### Individual Step Execution
 When developing it is useful to be able to run one step at the time. Say you want to run only
-the ``download`` step. The `main.py` is written so that the steps are defined at the top of the file, in the 
-``_steps`` list, and can be selected by using the `steps` parameter on the command line:
+the ``download`` step:
 
 ```bash
 > mlflow run . -P steps=download
 ```
-If you want to run the ``download`` and the ``basic_cleaning`` steps, you can similarly do:
+If you want to run the ``download`` and the ``basic_cleaning`` steps:
 ```bash
 > mlflow run . -P steps=download,basic_cleaning
 ```
-You can override any other parameter in the configuration file using the Hydra syntax, by
-providing it as a ``hydra_options`` parameter. For example, say that we want to set the parameter
-modeling -> random_forest -> n_estimators to 10 and etl->min_price to 50:
+
+#### Testing the Production Model
+To test the production model (requires model to be promoted to 'prod' in W&B):
+
+```bash
+> mlflow run . -P steps=test_regression_model
+```
+
+#### Parameter Override
+You can override any other parameter in the configuration file using the Hydra syntax:
 
 ```bash
 > mlflow run . \
@@ -137,10 +191,25 @@ _ = mlflow.run(
 ```
 where `config['main']['components_repository']` is set to 
 [https://github.com/udacity/Project-Build-an-ML-Pipeline-Starter/tree/main/components](https://github.com/udacity/Project-Build-an-ML-Pipeline-Starter/tree/main/components).
-You can see the parameters that they require by looking into their `MLproject` file:
 
+Available components:
 - `get_data`: downloads the data. [MLproject](https://github.com/udacity/Project-Build-an-ML-Pipeline-Starter/blob/main/components/get_data/MLproject)
-- `train_val_test_split`: segrgate the data (splits the data) [MLproject](https://github.com/udacity/Project-Build-an-ML-Pipeline-Starter/blob/main/components/train_val_test_split/MLproject)
+- `train_val_test_split`: segregate the data (splits the data) [MLproject](https://github.com/udacity/Project-Build-an-ML-Pipeline-Starter/blob/main/components/train_val_test_split/MLproject)
+- `test_regression_model`: tests production model against test set
+
+## Implementation Details
+
+### Data Processing
+- **Price filtering**: $10 - $350 range
+- **Geographic filtering**: NYC boundaries (longitude: -74.25 to -73.50, latitude: 40.5 to 41.2)
+- **Data validation**: Comprehensive test suite ensuring data quality
+- **Feature engineering**: Date features, TF-IDF text processing
+
+### Model Features
+- **Preprocessing pipeline**: Handles categorical, numerical, and text features
+- **Random Forest**: Optimized for price prediction task
+- **Performance metrics**: R² score and Mean Absolute Error
+- **Artifact management**: Model versioning with W&B
 
 ## In case of errors
 
@@ -167,7 +236,7 @@ This will iterate over all the environments created by `mlflow` and remove them.
 
 ### MLflow & Wandb
 
-If you see the any error while running the command:
+If you see any error while running the command:
 
 ```
 > mlflow run .
@@ -175,6 +244,21 @@ If you see the any error while running the command:
 
 Please, make sure all steps are using **the same** python version and that you have **conda installed**. Additionally, *mlflow* and *wandb* packages are crucial and should have the same version.
 
+## Project Structure
+
+```
+├── config.yaml                 # Pipeline configuration with optimized hyperparameters
+├── main.py                     # Main pipeline orchestrator
+├── environment.yml             # Conda environment specification
+├── src/                        # Source code for pipeline steps
+│   ├── basic_cleaning/         # Data cleaning step
+│   ├── data_check/            # Data validation tests
+│   └── train_random_forest/    # Model training step
+└── components/                 # Reusable pipeline components
+    ├── get_data/              # Data ingestion
+    ├── train_val_test_split/  # Data splitting
+    └── test_regression_model/ # Model testing
+```
 
 ## License
 

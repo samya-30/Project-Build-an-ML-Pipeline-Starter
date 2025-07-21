@@ -8,7 +8,7 @@ Creative Commons Attribution-NonCommercial- NoDerivs 3.0 License located at
 http://creativecommons.org/licenses/by-nc-nd/4.0 and successor locations for
 such license (the "CC License") provided that, in each case, the Educational
 Content is specifically marked as being subject to the CC License.
-
+ 
 Udacity expressly defines the following as falling outside the definition of
 "non-commercial":
 (a) the sale or rental of (i) any part of the Educational Content, (ii) any

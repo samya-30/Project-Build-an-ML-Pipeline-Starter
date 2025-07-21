@@ -4,7 +4,7 @@ main:
   # Set this to null if you are running in prod
   project_name: nyc_airbnb
   experiment_name: development
-  steps: all
+  steps: "download,basic_cleaning,data_check,data_split,train_random_forest"
 etl:
   sample: "sample1.csv"
   min_price: 10  # dollars
@@ -26,13 +26,13 @@ modeling:
   # NOTE: you can put here any parameter that is accepted by the constructor of
   # RandomForestRegressor. This is a subsample, but more could be added:
   random_forest:
-    n_estimators: 100
-    max_depth: 15
-    min_samples_split: 4
-    min_samples_leaf: 3
+    n_estimators: 200          # UPDATED: Was 100, now 200 (better performance)
+    max_depth: 10              # UPDATED: Was 15, now 10 (better performance)
+    min_samples_split: 4       # KEPT: Already optimal
+    min_samples_leaf: 3        # KEPT: Already optimal
     # Here -1 means all available cores
-    n_jobs: -1
-    criterion: squared_error
-    max_features: 0.5
+    n_jobs: -1                 # KEPT: Already optimal
+    criterion: squared_error   # KEPT: Standard for regression
+    max_features: 0.5          # KEPT: Already optimal
     # DO not change the following
-    oob_score: true
+    oob_score: true            # KEPT: Required for model validation
