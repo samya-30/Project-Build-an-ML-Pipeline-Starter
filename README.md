@@ -1,6 +1,6 @@
 ## Project Links
-- GitHub Repository: https://github.com/hammadwaheed1133/Project-Build-an-ML-Pipeline-Starter-03-07-25.git
-- Weights & Biases Project: https://wandb.ai/hwahee2-western-governors-university/nyc_airbnb
+- GitHub Repository: https://github.com/samya-30/Project-Build-an-ML-Pipeline-Starter
+- Weights & Biases Project: https://wandb.ai/sbaouf2-western-governors-university
 
 ## Project Status: COMPLETED ✓
 
